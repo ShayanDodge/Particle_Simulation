@@ -27,19 +27,22 @@ z=zeros(sqrt(4^n),sqrt(4^n),n+1);% center at the mesh
 a=zeros(sqrt(4^n),sqrt(4^n),n+1);
 Q_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);
 for k=1:n+1
-for i=1:k
-for j=1:k   
+ for i=1:k
+  for j=1:k   
 y_length=y_min+(y_max-y_min)./(2^(k-1));
 x_length=x_min+(x_max-x_min)./(2^(k-1));
 z(i,j,k)= i.*(x_length./2) + j.*(y_length./2);
-for charge=1:N
-if (i-1).*x_length<=x(charge) & x(charge)<=i.*x_length & (j-1).*y_length<=y(charge) & y(charge)<=j.*y_length
+   for charge=1:N
+    if (i-1).*x_length<=x(charge) &...
+       x(charge)<=i.*x_length     &...
+       (j-1).*y_length<=y(charge) &...
+       y(charge)<=j.*y_length
 a(i,j,k)=a(i,j,k)-q(charge).*sqrt(x(charge).^2+y(charge)^2);
 Q_cell(i,j,k)=Q_cell(i,j,k)+q(charge);
-end
-end
-end
-end
+    end
+   end
+  end
+ end
 end
 phi=zeros(sqrt(4^n),sqrt(4^n),n+1);
 psi=zeros(sqrt(4^n),sqrt(4^n),n+1);
@@ -48,6 +51,33 @@ psi_p=zeros(sqrt(4^n),sqrt(4^n),n+1);
 % From multipole expansions of potential field
 % due to particles in each box about the box 
 % center at the finest mesh level
-phi = Q_cell.*log(z)+(a./z);
+phi(:,:,n+1) = Q_cell(:,:,n+1).*log(z(:,:,n+1))+(a(:,:,n+1)./z(:,:,n+1));
 %% ==============step 2=======================
+% Form multipole expansions about the centers
+% of all boxes at all coarser mesh levels, each
+% expansion representing the potential field
+% due to all particles contained in one box.
+for k=1:n
+    for i=1:(sqrt(4^(k-1)))
+        for j=1:(sqrt(4^(k-1)))
+            for ci=i.*sqrt(4^(n-(k-1))):(i-1).*sqrt(4^(n-(k-1)))+1
+                for cj=j.*sqrt(4^(n-(k-1))):(j-1).*sqrt(4^(n-(k-1)))+1
+                phi(i,j,k)=phi(i,j,k)+...
+                           z(ci,cj,k)+b(ci,cj,n+1);
+                end
+            end
+        end
+    end
+end
+%% ==============step 3=======================
+
+
+
+
+
+
+
+
+
+
 
