@@ -63,20 +63,46 @@ for k=1:n
             for ci=i.*sqrt(4^(n-(k-1))):(i-1).*sqrt(4^(n-(k-1)))+1
                 for cj=j.*sqrt(4^(n-(k-1))):(j-1).*sqrt(4^(n-(k-1)))+1
                 phi(i,j,k)=phi(i,j,k)+...
-                           z(ci,cj,k)+b(ci,cj,n+1);
+                Q_cell(ci,cj,k).*log(z(ci,cj,k))+Q_cell(ci,cj,k).*z(ci,cj,k);
                 end
             end
         end
     end
 end
 %% ==============step 3=======================
-
-
-
-
-
-
-
+% Form a local expansion about the center of each...
+% box at each mesh level l<=n-1. This local expansion...
+% describes the field due to all particles in the...
+% system that are not contained in the current box...
+% or its nearest neighbors. Once the local expansion...
+% is obtained for a given box, it is shifted,...
+% in the second inner loop to the centers of the...
+% box’s children, forming the initial expansion for...
+% the boxes at the next level.
+for k=1:n
+    for i=1:(sqrt(4^(k-1)))
+        for j=1:(sqrt(4^(k-1)))
+            for ci=1:sqrt(4^(k-1))
+                for cj=1:sqrt(4^(k-1))
+                   if cj==j & ci==i 
+                   else
+                psi(i,j,k)=psi(i,j,k)+...
+                b_0(ci,cj,k).*log(z(ci,cj,k))+b_1(ci,cj,k).*z(ci,cj,k);
+                   end
+                end
+            end
+        end
+    end
+ psi_p(i,j,k)=psi(i,j,k);
+ kp1=k+1;
+     for ci=1:(sqrt(4^(kp1-1)))
+        for cj=1:(sqrt(4^(kp1-1)))
+                psi_p(ci,cj,kp1)=psi_p(ci,cj,kp1)+...
+                    psi(ceil(ci./sqrt(4^(n-(kp1-1)))),ceil(cj./sqrt(4^(n-(kp1-1)))),k).*z_0(ci,cj,kp1);
+        end
+     end 
+end
+%% ==============step 4=======================
 
 
 
