@@ -17,6 +17,9 @@ q=input('q='); % charge of particles
 Q_total=sum(q); % total charge
 x=input('x='); % location of particles (x,y)
 y=input('y='); 
+if size(x)~=N | size(y)~=N | size(q)~=N
+    disp('Error')
+else
 % Determining the simulation domain
 x_min=min(x);
 y_min=min(y);
@@ -42,8 +45,8 @@ psi_p=zeros(sqrt(4^n),sqrt(4^n),n+1);
 % This loop detects that which particles are inside of each box.
 % a_1 and Q_cell and N_cell are calculated in this loop
 for k=1:n+1
- for i=1:k
-  for j=1:k   
+ for i=1:2^(k-1)
+  for j=1:2^(k-1)   
 y_length=y_min+(y_max-y_min)./(2^(k-1));
 x_length=x_min+(x_max-x_min)./(2^(k-1));
 z(i,j,k)= i.*(x_length./2) + j.*(y_length./2);
@@ -171,4 +174,4 @@ end
 
 
 
-
+end
