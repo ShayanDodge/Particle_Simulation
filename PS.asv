@@ -17,25 +17,36 @@ q=input('q='); % charge of particles
 Q_total=sum(q); % total charge
 x=input('x='); % location of particles (x,y)
 y=input('y='); 
+if size(x)~=N 
+    disp('error')
+else
 % Determining the simulation domain
-x_min=min(x);
-y_min=min(y);
-x_max=max(x);
-y_max=max(y);
+x_min=min(x)-0.5;
+y_min=min(y)-0.5;
+x_max=max(x)+0.5;
+y_max=max(y)+0.5;
 x_domain=linspace(x_min,x_max,sqrt(4^n));
 y_domain=linspace(y_min,y_max,sqrt(4^n));
 % Defining some parameters
 z=zeros(sqrt(4^n),sqrt(4^n),n+1);% location of each box center
 a_1=zeros(sqrt(4^n),sqrt(4^n),n+1);% the coefficient in the multipole expansion
 Q_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);% total charge inside of each box
-n_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);
+N_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);% number of particles inside of each box
+% the p-term multipole expansion (about the box center) of the potential field 
+% created by the particles contained inside box i at level l.
 phi=zeros(sqrt(4^n),sqrt(4^n),n+1);
+% the p-term expansion about the center of box i at level l, describing 
+% the potential field due to all particles outside the box and its nearest neighbors.
 psi=zeros(sqrt(4^n),sqrt(4^n),n+1);
+% the p-term local expansion about the center of box i at level l, describing
+% the potential field due to all particles outside i’s parent box and the parent box’s
+% nearest neighbors
 psi_p=zeros(sqrt(4^n),sqrt(4^n),n+1);
-
+% This loop detects that which particles are inside of each box.
+% a_1 and Q_cell and N_cell are calculated in this loop
 for k=1:n+1
- for i=1:k
-  for j=1:k   
+ for i=1:2^(k-1)
+  for j=1:2^(k-1)   
 y_length=y_min+(y_max-y_min)./(2^(k-1));
 x_length=x_min+(x_max-x_min)./(2^(k-1));
 z(i,j,k)= i.*(x_length./2) + j.*(y_length./2);
@@ -46,16 +57,16 @@ z(i,j,k)= i.*(x_length./2) + j.*(y_length./2);
        y(charge)<=j.*y_length
 a_1(i,j,k)=a_1(i,j,k)-q(charge).*sqrt(x(charge).^2+y(charge)^2);
 Q_cell(i,j,k)=Q_cell(i,j,k)+q(charge);
-n_cell(i,j,k)=n_cell(i,j,k)+1;
+N_cell(i,j,k)=N_cell(i,j,k)+1;
     end
    end
   end
  end
 end
-
+% 
 for k=1:n
-  cells(k).z_i=zeros(n_cell(k),1);
-  cells(k).phi_z_i=zeros(n_cell(k),1);
+  cells(k).z_i=zeros(N_cell(k),1);
+  cells(k).phi_z_i=zeros(N_cell(k),1);
 end
 
 for k=1:n+1
@@ -151,8 +162,8 @@ end
 %% ==============step 5=======================
 % Evaluate local expansions at particle positions.
 for k=1:4^n
-    for num_i=1:n_cell(k)
-        for num_j=1:n_cell(k)
+    for num_i=1:N_cell(k)
+        for num_j=1:N_cell(k)
 cells(k).phi_z_i(num_i)=-log(cells(k).z_i(num_j)-cells(k).z_i(num))
         end
     end
@@ -163,4 +174,4 @@ end
 
 
 
-
+end
