@@ -31,7 +31,7 @@ y_domain=linspace(y_min,y_max,sqrt(4^n));
 z=zeros(sqrt(4^n),sqrt(4^n),n+1);% location of each box center
 a_1=zeros(sqrt(4^n),sqrt(4^n),n+1);% the coefficient in the multipole expansion
 Q_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);% total charge inside of each box
-N_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);% number of particles inside of each box
+N_cell=zeros(sqrt(4^n),sqrt(4^n));% number of particles inside of each box
 % the p-term multipole expansion (about the box center) of the potential field 
 % created by the particles contained inside box i at level l.
 phi=zeros(sqrt(4^n),sqrt(4^n),n+1);
@@ -43,7 +43,7 @@ psi=zeros(sqrt(4^n),sqrt(4^n),n+1);
 % nearest neighbors
 psi_p=zeros(sqrt(4^n),sqrt(4^n),n+1);
 % This loop detects that which particles are inside of each box.
-% a_1 and Q_cell and N_cell are calculated in this loop
+% a_1, Q_cell and N_cell are calculated in this loop
 for k=1:n+1
  for i=1:2^(k-1)
   for j=1:2^(k-1)   
@@ -57,44 +57,44 @@ z(i,j,k)= i.*(x_length./2) + j.*(y_length./2);
        y(charge)<=j.*y_length
 a_1(i,j,k)=a_1(i,j,k)-q(charge).*sqrt(x(charge).^2+y(charge)^2);
 Q_cell(i,j,k)=Q_cell(i,j,k)+q(charge);
-N_cell(i,j,k)=N_cell(i,j,k)+1;
+if k==n+1
+N_cell(i,j)=N_cell(i,j)+1;
+end
     end
    end
   end
  end
 end
-% 
-for k=1:n
-  cells(k).z_i=zeros(N_cell(k),1);
-  cells(k).phi_z_i=zeros(N_cell(k),1);
+for k=1:4^(n)
+  cells(k).z_i=zeros(N_cell(k),1);% location of each particles inside each box
+  cells(k).phi_z_i=zeros(N_cell(k),1);% the multipole expansion at each particles location
 end
-
-for k=1:n+1
- for i=1:k
-  for j=1:k   
+% This loop detects location of each particles inside each box (z=x^2+y^2).
+cell_number=1;
+ for i=1:2^(n)
+  for j=1:2^(n) 
 y_length=y_min+(y_max-y_min)./(2^(k-1));
 x_length=x_min+(x_max-x_min)./(2^(k-1));
 z(i,j,k)= i.*(x_length./2) + j.*(y_length./2);
-number=1;
+charge_number=1;
    for charge=1:N
     if (i-1).*x_length<=x(charge) &...
        x(charge)<=i.*x_length     &...
        (j-1).*y_length<=y(charge) &...
        y(charge)<=j.*y_length
-   
-cells(k).z_i(number)=sqrt(x(charge).^2+y(charge)^2);
-number=number+1;
+cells(cell_number).z_i(charge_number)=sqrt(x(charge).^2+y(charge)^2);
+charge_number=charge_number+1; 
     end
    end
+cell_number=cell_number+1;
   end
  end
-end
-%% ==============step 1======================= 
+%% ==============step 1====================================================
 % From multipole expansions of potential field
 % due to particles in each box about the box 
 % center at the finest mesh level
 phi(:,:,n+1) = Q_cell(:,:,n+1).*log(z(:,:,n+1))+(a_1(:,:,n+1)./z(:,:,n+1));
-%% ==============step 2=======================
+%% ==============step 2====================================================
 % Form multipole expansions about the centers
 % of all boxes at all coarser mesh levels, each
 % expansion representing the potential field
@@ -111,7 +111,7 @@ for k=1:n
         end
     end
 end
-%% ==============step 3=======================
+%% ==============step 3====================================================
 % Form a local expansion about the center of each...
 % box at each mesh level l<=n-1. This local expansion...
 % describes the field due to all particles in the...
@@ -144,7 +144,7 @@ for k=1:n-1
         end
      end 
 end
-%% ==============step 4=======================
+%% ==============step 4====================================================
 % Compute interactions at finest mesh level.
     for i=1:(sqrt(4^(n)))
         for j=1:(sqrt(4^(n)))
@@ -159,7 +159,7 @@ end
             end
         end
     end
-%% ==============step 5=======================
+%% ==============step 5====================================================
 % Evaluate local expansions at particle positions.
 for k=1:4^n
     for num_i=1:N_cell(k)
@@ -168,7 +168,7 @@ cells(k).phi_z_i(num_i)=-log(cells(k).z_i(num_j)-cells(k).z_i(num))
         end
     end
 end
-%% ==============step 6=======================
+%% ==============step 6====================================================
 
 
 
