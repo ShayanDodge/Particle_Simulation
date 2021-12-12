@@ -11,18 +11,20 @@ clc
 clear all
 %===================================
 %% ==============Initialize====================
-N=input('N=');%<N=number of particles><n=level>
-n=floor(log(N)./log(4));
-q=input('q=');
-Q_total=sum(q);
-x=input('x=');
-y=input('y=');
+N=input('N=');% number of particles
+n=floor(log(N)./log(4));% levels of refinement
+q=input('q='); % charge of particles
+Q_total=sum(q); % total charge
+x=input('x='); % location of particles (x,y)
+y=input('y='); 
+% Determining the simulation domain
 x_min=min(x);
 y_min=min(y);
 x_max=max(x);
 y_max=max(y);
 x_domain=linspace(x_min,x_max,sqrt(4^n));
 y_domain=linspace(y_min,y_max,sqrt(4^n));
+%
 z=zeros(sqrt(4^n),sqrt(4^n),n+1);% center at the mesh
 a=zeros(sqrt(4^n),sqrt(4^n),n+1);
 Q_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);
