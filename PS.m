@@ -68,6 +68,7 @@ end
 for k=1:4^(n)
   cells(k).z_i=zeros(N_cell(k),1);% location of each particles inside each box
   cells(k).phi_z_i=zeros(N_cell(k),1);% the multipole expansion at each particles location
+  cells(k).total_phi_z_i=zeros(N_cell(k),1);% the total potential at each particles location
 end
 % This loop detects location of each particles inside each box (z=x^2+y^2).
 cell_number=1;
@@ -201,5 +202,13 @@ end
 
 %% ==============step 7====================================================
 
-
+for i=1:2^n
+ for j=1:2^n
+     k=create_linear_index_list(z,i,j,n+1);
+   for num_i=1:N_cell(k)
+cells(k).total_phi_z_i(num_i)=cells(k).phi_z_i(num_i)+phi(i,j,n+1)+...
+psi(i,j,n+1)+psi_p(i,j,n+1);
+   end
+ end
+end
 end
