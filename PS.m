@@ -171,14 +171,35 @@ psi(i,j,n+1)=psi(i,j,n+1)+...
 for k=1:4^n
     for num_i=1:N_cell(k)
         for num_j=1:N_cell(k)
-cells(k).phi_z_i(num_i)=-log(cells(k).z_i(num_j)-cells(k).z_i(num))
+            if num_i~=num_j
+cells(k).phi_z_i(num_i)=cells(k).phi_z_i(num_i)-...
+log(cells(k).z_i(num_j)-cells(k).z_i(num_i));
+            end
         end
     end
 end
 %% ==============step 6====================================================
+% Compute potential (or force) due to nearest neighbors directly.
+for i=2:2^n-1
+ for j=2:2^n-1
+k=create_linear_index_list(z,i,j,n+1);
+  for ii=-1:1
+   for jj=-1:1
+    if ii~=0 & jj~=0
+     for num_i=1:N_cell(k)
+k_n=create_linear_index_list(z,i+ii,j+jj,n+1);
+      for num_j=1:N_cell(k_n)           
+cells(k).phi_z_i(num_i)=cells(k).phi_z_i(num_i)-...
+log(cells(k).z_i(num_i)-cells(k_n).z_i(num_j));
+      end
+     end
+    end
+   end
+  end  
+ end
+end
 
-
-
+%% ==============step 7====================================================
 
 
 end
