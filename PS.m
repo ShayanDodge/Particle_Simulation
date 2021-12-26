@@ -76,7 +76,6 @@ cell_number=1;
   for j=1:2^(n) 
 y_length=y_min+(y_max-y_min)./(2^(k-1));
 x_length=x_min+(x_max-x_min)./(2^(k-1));
-z(i,j,k)= i.*(x_length./2) + j.*(y_length./2);
 charge_number=1;
    for charge=1:N
     if (i-1).*x_length<=x(charge) &...
@@ -183,12 +182,12 @@ end
 % Compute potential (or force) due to nearest neighbors directly.
 for i=2:2^n-1
  for j=2:2^n-1
-k=create_linear_index_list(z,i,j,n+1);
+k=create_linear_index_list(z,i,j,n+1)-(n.*(2^n).^2);
   for ii=-1:1
    for jj=-1:1
     if ii~=0 & jj~=0
      for num_i=1:N_cell(k)
-k_n=create_linear_index_list(z,i+ii,j+jj,n+1);
+k_n=create_linear_index_list(z,i+ii,j+jj,n+1)-(n.*(2^n).^2);
       for num_j=1:N_cell(k_n)           
 cells(k).phi_z_i(num_i)=cells(k).phi_z_i(num_i)-...
 log(cells(k).z_i(num_i)-cells(k_n).z_i(num_j));
@@ -204,7 +203,7 @@ end
 
 for i=1:2^n
  for j=1:2^n
-     k=create_linear_index_list(z,i,j,n+1);
+     k=create_linear_index_list(z,i,j,n+1)-(n.*(2^n).^2);
    for num_i=1:N_cell(k)
 cells(k).total_phi_z_i(num_i)=cells(k).phi_z_i(num_i)+phi(i,j,n+1)+...
 psi(i,j,n+1)+psi_p(i,j,n+1);
