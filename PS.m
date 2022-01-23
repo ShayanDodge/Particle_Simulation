@@ -51,19 +51,20 @@ y_domain=linspace(y_min,y_max,sqrt(4^n));
 % Defining some parameters
 z=zeros(sqrt(4^n),sqrt(4^n),n+1);% location of each box center
 a_1=zeros(sqrt(4^n),sqrt(4^n),n+1);% the coefficient in the multipole expansion
-Q_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);% total charge inside of each box and their nearest neighbors
-N_cell=zeros(sqrt(4^n),sqrt(4^n));% number of particles inside of each box and their nearest neighbors
+Q_cell=zeros(sqrt(4^n),sqrt(4^n),n+1);% total charge inside of each box
+N_cell=zeros(sqrt(4^n),sqrt(4^n));% number of particles inside of each
 % the p-term multipole expansion (about the box center) of the potential field 
 % created by the particles contained inside box i at level l.
 phi=zeros(sqrt(4^n),sqrt(4^n),n+1);
 % the p-term expansion about the center of box i at level l, describing 
-% the potential field due to all particles outside the box and its nearest neighbors.
+% the potential field due to all particles inside the interaction list of ibox
 psi=zeros(sqrt(4^n),sqrt(4^n),n+1);
 % the p-term local expansion about the center of box i at level l, describing
-% the potential field due to all particles outside i’s parent box and the parent box’s
+% the potential field due to all particles inside the interaction list of
+% ibox and ibox's parent
 % nearest neighbors
 psi_p=zeros(sqrt(4^n),sqrt(4^n),n+1);
-% This loop detects which particles are inside each box and their nearest neighbors.
+% This loop detects which particles are inside each box.
 % a_1, Q_cell and N_cell are calculated in this loop
 for k=1:n+1
  for i=1:2^(k-1)
@@ -259,7 +260,7 @@ log(cells(k).z_i(num_i)-cells(k_n).z_i(num_j));
  end
 end
 %% ==============step 7====================================================
-
+% Adding direct and farfield terms together
 for k=1:4^n
    for num_i=1:N_cell(k)
 cells(k).total_phi_z_i(num_i)=cells(k).phi_z_i(num_i)+cells(k).psi_z_i(num_i);
