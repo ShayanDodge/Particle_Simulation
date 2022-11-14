@@ -5,10 +5,10 @@
 ![2](https://user-images.githubusercontent.com/94797491/152132961-19129017-485b-40be-8231-0dde6b2021f6.png)
 ## Stay in touch
 
-* Author - [Shayan Dodge](https://www.researchgate.net/profile/Shayan-Dodge)
-* Email - dodgeshayan@gmail.com
-* Linkedin - [Shayan Dodge](https://www.linkedin.com/in/shayan-dodge-441453204/)
+* Author   [Shayan Dodge](https://www.researchgate.net/profile/Shayan-Dodge)
+* Email    dodgeshayan@gmail.com
+* Linkedin [Shayan Dodge](https://www.linkedin.com/in/shayan-dodge-441453204/)
 
 ## License
 
-[MIT licensed](LICENSE).
+GNU General Public License v3.0
